@@ -36,7 +36,13 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodayScreen(vm: MihadViewModel, user: User, onNavigateToProfile: () -> Unit) {
+fun TodayScreen(
+    vm: MihadViewModel,
+    user: User,
+    onNavigateToProfile: () -> Unit,
+    onNavigateToPlanner: () -> Unit,
+    onNavigateToRoadmap: () -> Unit
+) {
     val lessons by vm.lessons.collectAsState()
     val dailyScores by vm.dailyScores.collectAsState()
     val dailySmartMessage by vm.dailySmartMessage.collectAsState()
@@ -138,7 +144,7 @@ fun TodayScreen(vm: MihadViewModel, user: User, onNavigateToProfile: () -> Unit)
                         Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = Forest, modifier = Modifier.size(20.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "رسالة اليوم من مدرّبك الذكي",
+                            text = "رسالة اليوم من مدرّكب الذكي",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Black,
                             color = Forest
@@ -159,6 +165,68 @@ fun TodayScreen(vm: MihadViewModel, user: User, onNavigateToProfile: () -> Unit)
                     fontWeight = FontWeight.Medium,
                     lineHeight = 20.sp
                 )
+            }
+        }
+
+        // 2b. AI Planner & Roadmap Shortcuts
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Planner Card Shortcut
+                PremiumCard(
+                    modifier = Modifier.weight(1f),
+                    onClick = onNavigateToPlanner,
+                    borderColor = Forest.copy(alpha = 0.15f),
+                    containerColor = CardBg
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(Mint),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Default.Schedule, contentDescription = null, tint = Forest, modifier = Modifier.size(20.dp))
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("خطة اليوم الذكية", fontSize = 13.sp, fontWeight = FontWeight.Black, color = Ink)
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text("تنظيم الجهد المعرفي", fontSize = 10.sp, color = Ink.copy(alpha = 0.5f))
+                    }
+                }
+
+                // Roadmap Card Shortcut
+                PremiumCard(
+                    modifier = Modifier.weight(1f),
+                    onClick = onNavigateToRoadmap,
+                    borderColor = Gold.copy(alpha = 0.15f),
+                    containerColor = CardBg
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(Gold.copy(alpha = 0.15f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Default.Event, contentDescription = null, tint = Gold, modifier = Modifier.size(20.dp))
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("التواريخ الهامة", fontSize = 13.sp, fontWeight = FontWeight.Black, color = Ink)
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text("الامتحانات والمزامنة", fontSize = 10.sp, color = Ink.copy(alpha = 0.5f))
+                    }
+                }
             }
         }
 

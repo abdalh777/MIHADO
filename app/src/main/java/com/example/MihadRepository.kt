@@ -12,6 +12,22 @@ class MihadRepository(private val db: AppDatabase) {
     private val dailyScoreDao = db.dailyScoreDao()
     private val aiInsightDao = db.aiInsightDao()
     private val studySessionDao = db.studySessionDao()
+    private val plannerActivityDao = db.plannerActivityDao()
+    private val importantDateDao = db.importantDateDao()
+
+    // Planner Activities
+    fun getActivitiesForDate(userId: String, date: String): Flow<List<PlannerActivity>> =
+        plannerActivityDao.getActivitiesForDate(userId, date)
+    suspend fun insertActivity(activity: PlannerActivity) = plannerActivityDao.insertActivity(activity)
+    suspend fun updateActivity(activity: PlannerActivity) = plannerActivityDao.updateActivity(activity)
+    suspend fun deleteActivity(activity: PlannerActivity) = plannerActivityDao.deleteActivity(activity)
+
+    // Important Dates
+    fun getImportantDatesForUser(userId: String): Flow<List<ImportantDate>> =
+        importantDateDao.getImportantDatesForUser(userId)
+    suspend fun insertImportantDate(importantDate: ImportantDate) = importantDateDao.insertImportantDate(importantDate)
+    suspend fun updateImportantDate(importantDate: ImportantDate) = importantDateDao.updateImportantDate(importantDate)
+    suspend fun deleteImportantDate(importantDate: ImportantDate) = importantDateDao.deleteImportantDate(importantDate)
 
     // Users
     suspend fun getUserById(id: String): User? = userDao.getUserById(id)
@@ -71,5 +87,7 @@ class MihadRepository(private val db: AppDatabase) {
         dailyScoreDao.deleteDailyScoresForUser(userId)
         aiInsightDao.deleteAiInsightsForUser(userId)
         studySessionDao.deleteStudySessionsForUser(userId)
+        plannerActivityDao.deleteActivitiesForUser(userId)
+        importantDateDao.deleteImportantDatesForUser(userId)
     }
 }

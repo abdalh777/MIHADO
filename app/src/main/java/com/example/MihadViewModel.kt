@@ -110,6 +110,31 @@ class MihadViewModel(application: Application) : AndroidViewModel(application) {
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    private val _selectedPlannerDate = MutableStateFlow<String>(LocalDate.now().toString())
+    val selectedPlannerDate: StateFlow<String> = _selectedPlannerDate.asStateFlow()
+
+    val plannerActivities: StateFlow<List<PlannerActivity>> = _currentUser
+        .flatMapLatest { user ->
+            if (user != null) {
+                _selectedPlannerDate.flatMapLatest { date ->
+                    repository.getActivitiesForDate(user.id, date)
+                }
+            } else {
+                flowOf(emptyList())
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val importantDates: StateFlow<List<ImportantDate>> = _currentUser
+        .flatMapLatest { user ->
+            if (user != null) {
+                repository.getImportantDatesForUser(user.id)
+            } else {
+                flowOf(emptyList())
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     private val _currentDateHabitLogs = MutableStateFlow<List<HabitLog>>(emptyList())
     val currentDateHabitLogs: StateFlow<List<HabitLog>> = _currentDateHabitLogs.asStateFlow()
 
@@ -1007,6 +1032,159 @@ class MihadViewModel(application: Application) : AndroidViewModel(application) {
                 }
             } catch (e: Exception) {
                 Log.e("MihadViewModel", "Failed to trigger test notification", e)
+            }
+        }
+    }
+
+    // --- Module A & B Helpers ---
+    fun changePlannerDate(date: String) {
+        _selectedPlannerDate.value = date
+    }
+
+    fun togglePlannerActivity(activity: PlannerActivity) {
+        viewModelScope.launch {
+            val updated = activity.copy(isCompleted = !activity.isCompleted)
+            repository.updateActivity(updated)
+        }
+    }
+
+    fun addManualPlannerActivity(title: String, startTime: String, durationMinutes: Int, category: String) {
+        val user = _currentUser.value ?: return
+        val date = _selectedPlannerDate.value
+        viewModelScope.launch {
+            val activity = PlannerActivity(
+                id = UUID.randomUUID().toString(),
+                userId = user.id,
+                title = title,
+                startTime = startTime,
+                durationMinutes = durationMinutes,
+                category = category,
+                isCompleted = false,
+                date = date
+            )
+            repository.insertActivity(activity)
+        }
+    }
+
+    fun deletePlannerActivity(activity: PlannerActivity) {
+        viewModelScope.launch {
+            repository.deleteActivity(activity)
+        }
+    }
+
+    fun deleteImportantDate(importantDate: ImportantDate) {
+        viewModelScope.launch {
+            repository.deleteImportantDate(importantDate)
+        }
+    }
+
+    fun generateDailyPlanner(input: String, onComplete: (Boolean) -> Unit) {
+        val user = _currentUser.value ?: return
+        val date = _selectedPlannerDate.value
+        viewModelScope.launch {
+            try {
+                val currentTime = java.time.LocalTime.now().toString().take(5)
+                val jsonString = GeminiHelper.parsePlannerInput(input, currentTime)
+                val cleanJson = jsonString.trim()
+                    .removePrefix("```json")
+                    .removeSuffix("```")
+                    .trim()
+
+                // Parse array
+                val array = JSONArray(cleanJson)
+                if (array.length() > 0) {
+                    // Clear existing activities for this date
+                    val currentActivities = repository.getActivitiesForDate(user.id, date).first()
+                    for (act in currentActivities) {
+                        repository.deleteActivity(act)
+                    }
+
+                    for (i in 0 until array.length()) {
+                        val obj = array.getJSONObject(i)
+                        val activity = PlannerActivity(
+                            id = UUID.randomUUID().toString(),
+                            userId = user.id,
+                            title = obj.optString("title", "نشاط مجدول 📅"),
+                            startTime = obj.optString("startTime", "12:00"),
+                            durationMinutes = obj.optInt("durationMinutes", 30),
+                            category = obj.optString("category", "STUDY"),
+                            isCompleted = false,
+                            date = date
+                        )
+                        repository.insertActivity(activity)
+                    }
+                    onComplete(true)
+                } else {
+                    onComplete(false)
+                }
+            } catch (e: Exception) {
+                Log.e("MihadViewModel", "Error generating planner", e)
+                onComplete(false)
+            }
+        }
+    }
+
+    fun addImportantDateWithAi(input: String, onComplete: (Boolean, String) -> Unit) {
+        val user = _currentUser.value ?: return
+        viewModelScope.launch {
+            try {
+                val jsonString = GeminiHelper.parseDeadlineInput(input)
+                val cleanJson = jsonString.trim()
+                    .removePrefix("```json")
+                    .removeSuffix("```")
+                    .trim()
+
+                val obj = JSONObject(cleanJson)
+                val title = obj.optString("title", "اختبار أو موعد مهم")
+                val targetDate = obj.optString("date", LocalDate.now().plusDays(3).toString())
+                val priority = obj.optString("priority", "NORMAL")
+                val lessonsArray = obj.optJSONArray("linkedLessons")
+
+                val linkedList = mutableListOf<String>()
+                if (lessonsArray != null) {
+                    for (i in 0 until lessonsArray.length()) {
+                        linkedList.add(lessonsArray.getString(i))
+                    }
+                }
+                val linkedTitlesString = linkedList.joinToString(",")
+
+                // 1. Save ImportantDate
+                val importantDate = ImportantDate(
+                    id = UUID.randomUUID().toString(),
+                    userId = user.id,
+                    title = title,
+                    date = targetDate,
+                    priority = priority,
+                    linkedLessonTitles = linkedTitlesString,
+                    isSynced = true
+                )
+                repository.insertImportantDate(importantDate)
+
+                // 2. Spaced Repetition Sync: Inject lessons into Spaced Repetition queue
+                for (lessonTitle in linkedList) {
+                    addLesson(title = lessonTitle, subject = "مواد أخرى")
+                }
+
+                // 3. Daily Planner Sync: Auto-reserve study blocks in Daily Planner leading to test date
+                val todayStr = LocalDate.now().toString()
+                for (lessonTitle in linkedList) {
+                    val activity = PlannerActivity(
+                        id = UUID.randomUUID().toString(),
+                        userId = user.id,
+                        title = "التحضير لاختبار $title: مذاكرة موضوع $lessonTitle 🎯",
+                        startTime = "16:00", // Default study afternoon
+                        durationMinutes = 60,
+                        category = "STUDY",
+                        isCompleted = false,
+                        date = todayStr
+                    )
+                    repository.insertActivity(activity)
+                }
+
+                onComplete(true, title)
+            } catch (e: Exception) {
+                Log.e("MihadViewModel", "Error syncing deadline", e)
+                onComplete(false, "حدث خطأ أثناء فك ترميز الرد")
             }
         }
     }

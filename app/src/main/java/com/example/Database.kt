@@ -247,6 +247,65 @@ interface StudySessionDao {
     suspend fun deleteStudySessionsForUser(userId: String)
 }
 
+@Entity(tableName = "planner_activities")
+data class PlannerActivity(
+    @PrimaryKey val id: String,
+    val userId: String,
+    val title: String,
+    val startTime: String, // "HH:MM" format
+    val durationMinutes: Int,
+    val category: String, // "REST", "STUDY", "REPETITION", "LANGUAGE", "WORKOUT", "BREAK", "REST_DAY"
+    val isCompleted: Boolean = false,
+    val date: String // YYYY-MM-DD
+)
+
+@Entity(tableName = "important_dates")
+data class ImportantDate(
+    @PrimaryKey val id: String,
+    val userId: String,
+    val title: String,
+    val date: String, // YYYY-MM-DD
+    val priority: String, // "CRITICAL", "HIGH", "NORMAL"
+    val linkedLessonTitles: String = "", // comma-separated lesson titles
+    val isSynced: Boolean = true
+)
+
+@Dao
+interface PlannerActivityDao {
+    @Query("SELECT * FROM planner_activities WHERE userId = :userId AND date = :date ORDER BY startTime ASC")
+    fun getActivitiesForDate(userId: String, date: String): Flow<List<PlannerActivity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertActivity(activity: PlannerActivity)
+
+    @Update
+    suspend fun updateActivity(activity: PlannerActivity)
+
+    @Delete
+    suspend fun deleteActivity(activity: PlannerActivity)
+
+    @Query("DELETE FROM planner_activities WHERE userId = :userId")
+    suspend fun deleteActivitiesForUser(userId: String)
+}
+
+@Dao
+interface ImportantDateDao {
+    @Query("SELECT * FROM important_dates WHERE userId = :userId ORDER BY date ASC")
+    fun getImportantDatesForUser(userId: String): Flow<List<ImportantDate>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertImportantDate(importantDate: ImportantDate)
+
+    @Update
+    suspend fun updateImportantDate(importantDate: ImportantDate)
+
+    @Delete
+    suspend fun deleteImportantDate(importantDate: ImportantDate)
+
+    @Query("DELETE FROM important_dates WHERE userId = :userId")
+    suspend fun deleteImportantDatesForUser(userId: String)
+}
+
 @Database(
     entities = [
         User::class,
@@ -257,9 +316,11 @@ interface StudySessionDao {
         HabitLog::class,
         DailyScore::class,
         AiInsight::class,
-        StudySession::class
+        StudySession::class,
+        PlannerActivity::class,
+        ImportantDate::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -272,6 +333,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun dailyScoreDao(): DailyScoreDao
     abstract fun aiInsightDao(): AiInsightDao
     abstract fun studySessionDao(): StudySessionDao
+    abstract fun plannerActivityDao(): PlannerActivityDao
+    abstract fun importantDateDao(): ImportantDateDao
 
     companion object {
         @Volatile

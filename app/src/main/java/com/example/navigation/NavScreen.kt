@@ -31,6 +31,8 @@ import com.example.theme.*
 
 sealed class Screen(val route: String, val title: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
     object Today : Screen("today", "اليوم", Icons.Default.Home)
+    object Planner : Screen("planner", "خطتي", Icons.Default.Schedule)
+    object Roadmap : Screen("roadmap", "المهمة", Icons.Default.Event)
     object Study : Screen("study", "المذاكرة", Icons.AutoMirrored.Filled.MenuBook)
     object Heatmap : Screen("heatmap", "الخريطة", Icons.Default.GridOn)
     object Habits : Screen("habits", "العادات", Icons.Default.CheckCircle)
@@ -80,7 +82,7 @@ fun MihadNavigation(vm: MihadViewModel) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(start = 24.dp, end = 24.dp, bottom = 16.dp)
+                                        .padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
                                         .shadow(8.dp, RoundedCornerShape(20.dp), ambientColor = Color.Black.copy(alpha = 0.5f), spotColor = Color.Black.copy(alpha = 0.7f))
                                         .background(CardBg.copy(alpha = 0.95f), RoundedCornerShape(20.dp))
                                         .border(1.dp, Ink.copy(alpha = 0.12f), RoundedCornerShape(20.dp))
@@ -91,7 +93,15 @@ fun MihadNavigation(vm: MihadViewModel) {
                                         horizontalArrangement = Arrangement.SpaceEvenly,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        val tabs = listOf(Screen.Today, Screen.Study, Screen.Heatmap, Screen.Habits, Screen.Analytics)
+                                        val tabs = listOf(
+                                            Screen.Today,
+                                            Screen.Planner,
+                                            Screen.Roadmap,
+                                            Screen.Study,
+                                            Screen.Heatmap,
+                                            Screen.Habits,
+                                            Screen.Analytics
+                                        )
                                         tabs.forEach { screen ->
                                             val isSelected = currentRoute == screen.route
                                             
@@ -109,7 +119,7 @@ fun MihadNavigation(vm: MihadViewModel) {
                                                             restoreState = true
                                                         }
                                                     }
-                                                    .padding(horizontal = 6.dp, vertical = 4.dp)
+                                                    .padding(horizontal = 4.dp, vertical = 4.dp)
                                                     .graphicsLayer {
                                                         scaleX = scale
                                                         scaleY = scale
@@ -119,7 +129,7 @@ fun MihadNavigation(vm: MihadViewModel) {
                                             ) {
                                                 Box(
                                                     modifier = Modifier
-                                                        .size(36.dp)
+                                                        .size(34.dp)
                                                         .background(
                                                             if (isSelected) Forest.copy(alpha = 0.12f) else Color.Transparent,
                                                             RoundedCornerShape(10.dp)
@@ -130,13 +140,13 @@ fun MihadNavigation(vm: MihadViewModel) {
                                                         imageVector = screen.icon,
                                                         contentDescription = screen.title,
                                                         tint = if (isSelected) Forest else Ink.copy(alpha = 0.4f),
-                                                        modifier = Modifier.size(20.dp)
+                                                        modifier = Modifier.size(18.dp)
                                                     )
                                                 }
                                                 Spacer(modifier = Modifier.height(1.dp))
                                                 Text(
                                                     text = screen.title,
-                                                    fontSize = 9.sp,
+                                                    fontSize = 8.sp,
                                                     fontWeight = if (isSelected) FontWeight.Black else FontWeight.Medium,
                                                     color = if (isSelected) Forest else Ink.copy(alpha = 0.4f)
                                                 )
@@ -155,9 +165,19 @@ fun MihadNavigation(vm: MihadViewModel) {
                             exitTransition = { fadeOut(animationSpec = tween(220)) }
                         ) {
                             composable(Screen.Today.route) {
-                                TodayScreen(vm, activeUser, onNavigateToProfile = {
-                                    navController.navigate(Screen.Profile.route)
-                                })
+                                TodayScreen(
+                                    vm = vm,
+                                    user = activeUser,
+                                    onNavigateToProfile = { navController.navigate(Screen.Profile.route) },
+                                    onNavigateToPlanner = { navController.navigate(Screen.Planner.route) },
+                                    onNavigateToRoadmap = { navController.navigate(Screen.Roadmap.route) }
+                                )
+                            }
+                            composable(Screen.Planner.route) {
+                                PlannerScreen(vm)
+                            }
+                            composable(Screen.Roadmap.route) {
+                                RoadmapScreen(vm)
                             }
                             composable(Screen.Study.route) {
                                 StudyScreen(vm)

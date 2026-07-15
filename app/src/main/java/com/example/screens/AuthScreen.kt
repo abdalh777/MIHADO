@@ -54,11 +54,11 @@ fun AuthScreen(vm: MihadViewModel) {
         // Hero illustration
         Box(
             modifier = Modifier
-                .size(180.dp)
-                .clip(RoundedCornerShape(32.dp))
+                .size(160.dp)
+                .clip(RoundedCornerShape(20.dp))
                 .background(CardBg)
-                .border(2.dp, Mint.copy(alpha = 0.4f), RoundedCornerShape(32.dp))
-                .shadow(4.dp),
+                .border(1.dp, Ink.copy(alpha = 0.15f), RoundedCornerShape(20.dp))
+                .shadow(2.dp),
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -73,9 +73,9 @@ fun AuthScreen(vm: MihadViewModel) {
 
         Text(
             text = "مِهاد",
-            fontSize = 32.sp,
+            fontSize = 30.sp,
             fontWeight = FontWeight.Black,
-            color = Forest
+            color = Ink
         )
         Text(
             text = "المراجعة المتباعدة الذكية لتعلم يدوم",
@@ -199,8 +199,7 @@ fun AuthScreen(vm: MihadViewModel) {
                     Text(
                         text = if (isLogin) "تسجيل الدخول" else "إنشاء الحساب وبدء الجدولة",
                         fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        fontWeight = FontWeight.Bold
                     )
                 }
 
@@ -212,7 +211,7 @@ fun AuthScreen(vm: MihadViewModel) {
                 ) {
                     Text(
                         text = if (isLogin) "ليس لديك حساب؟ سجل الآن مجاناً" else "لديك حساب بالفعل؟ سجل دخولك",
-                        color = Forest,
+                        color = Ink.copy(alpha = 0.8f),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold
                     )

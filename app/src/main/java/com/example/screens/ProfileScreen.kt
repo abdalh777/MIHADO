@@ -200,7 +200,7 @@ fun ProfileScreen(vm: MihadViewModel, user: User) {
                             onClick = { vm.triggerTestNotification(testTitle, testBody) },
                             modifier = Modifier.weight(1f),
                             containerColor = Forest,
-                            contentColor = Color.White
+                            contentColor = Color.Black
                         ) {
                             Icon(Icons.Default.NotificationsActive, null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
@@ -341,7 +341,7 @@ fun ProfileScreen(vm: MihadViewModel, user: User) {
                             enabled = customPointsGoal.toIntOrNull() != null && (customPointsGoal.toIntOrNull() ?: 0) > 0,
                             modifier = Modifier.weight(1.2f)
                         ) {
-                            Text("حفظ ✔", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.White)
+                            Text("حفظ ✔", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                         }
                     }
                 }
@@ -396,7 +396,7 @@ fun ProfileScreen(vm: MihadViewModel, user: User) {
                             enabled = customRank.isNotBlank(),
                             modifier = Modifier.weight(1.2f)
                         ) {
-                            Text("حفظ ✔", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.White)
+                            Text("حفظ ✔", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                         }
                     }
                 }
@@ -440,11 +440,11 @@ fun ProfileScreen(vm: MihadViewModel, user: User) {
                                 showLogoutConfirm = false
                                 vm.logout()
                             },
-                            containerColor = Color.Red,
+                            containerColor = Coral,
                             contentColor = Color.White,
                             modifier = Modifier.weight(1.2f)
                         ) {
-                            Text("تأكيد الخروج ✔", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.White)
+                            Text("تأكيد الخروج ✔", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                         }
                     }
                 }

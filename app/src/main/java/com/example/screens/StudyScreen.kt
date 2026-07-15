@@ -128,7 +128,12 @@ fun StudyScreen(vm: MihadViewModel) {
                         contentPadding = PaddingValues(bottom = 100.dp)
                     ) {
                         items(filteredLessons) { lesson ->
-                            PremiumCard(modifier = Modifier.fillMaxWidth()) {
+                            var showLessonAiDialog by remember { mutableStateOf(false) }
+
+                            PremiumCard(
+                                onClick = { showLessonAiDialog = true },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically,
@@ -168,6 +173,14 @@ fun StudyScreen(vm: MihadViewModel) {
                                     }
                                 }
                             }
+
+                            if (showLessonAiDialog) {
+                                SmartLessonCompanionDialog(
+                                    lesson = lesson,
+                                    vm = vm,
+                                    onDismiss = { showLessonAiDialog = false }
+                                )
+                            }
                         }
                     }
                 }
@@ -182,8 +195,8 @@ fun StudyScreen(vm: MihadViewModel) {
                     FloatingActionButton(
                         onClick = { showAddLessonDialog = true },
                         containerColor = Forest,
-                        contentColor = Color.White,
-                        shape = RoundedCornerShape(16.dp)
+                        contentColor = Color.Black,
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Row(modifier = Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.Add, "إضافة درس")
@@ -272,8 +285,8 @@ fun StudyScreen(vm: MihadViewModel) {
                     FloatingActionButton(
                         onClick = { showAddQuestionDialog = true },
                         containerColor = Forest,
-                        contentColor = Color.White,
-                        shape = RoundedCornerShape(16.dp)
+                        contentColor = Color.Black,
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Row(modifier = Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.Add, "سجّل أسئلة")
@@ -404,7 +417,7 @@ fun StudyScreen(vm: MihadViewModel) {
                             enabled = title.isNotBlank(),
                             modifier = Modifier.weight(1.2f)
                         ) {
-                            Text("حفظ وجدولة ✔", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.White)
+                            Text("حفظ وجدولة ✔", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                         }
                     }
                 }
@@ -560,7 +573,7 @@ fun StudyScreen(vm: MihadViewModel) {
                             enabled = countStr.toIntOrNull() != null && (countStr.toIntOrNull() ?: 0) > 0,
                             modifier = Modifier.weight(1.2f)
                         ) {
-                            Text("تسجيل وحفظ ✔", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.White)
+                            Text("تسجيل وحفظ ✔", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                         }
                     }
                 }

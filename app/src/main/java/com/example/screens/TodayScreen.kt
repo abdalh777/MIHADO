@@ -220,13 +220,12 @@ fun TodayScreen(vm: MihadViewModel, user: User, onNavigateToProfile: () -> Unit)
                     onClick = { showSmartLogSheet = true },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(Icons.Default.AddComment, contentDescription = null, tint = Color.White)
+                    Icon(Icons.Default.AddComment, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "سجّل مذاكرتك اليوم بالذكاء الاصطناعي",
                         fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
@@ -255,12 +254,14 @@ fun TodayScreen(vm: MihadViewModel, user: User, onNavigateToProfile: () -> Unit)
                     )
                 }
 
-                Badge(containerColor = if (dueLessons.isNotEmpty()) Forest else Mint) {
+                Badge(
+                    containerColor = if (dueLessons.isNotEmpty()) Forest else CardBg,
+                    contentColor = if (dueLessons.isNotEmpty()) Color.Black else Ink.copy(alpha = 0.6f)
+                ) {
                     Text(
                         text = "${dueLessons.size} دروس",
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
-                        color = if (dueLessons.isNotEmpty()) Color.White else Forest,
                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                     )
                 }
@@ -322,6 +323,8 @@ fun TodayScreen(vm: MihadViewModel, user: User, onNavigateToProfile: () -> Unit)
     // B. Spaced Repetition Rating Dialog
     if (selectedLessonForReview != null) {
         val lesson = selectedLessonForReview!!
+        var showLessonAiDialog by remember { mutableStateOf(false) }
+
         Dialog(onDismissRequest = { selectedLessonForReview = null }) {
             Card(
                 shape = RoundedCornerShape(24.dp),
@@ -346,7 +349,23 @@ fun TodayScreen(vm: MihadViewModel, user: User, onNavigateToProfile: () -> Unit)
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // AI Assistant Shortcut
+                    PremiumButton(
+                        onClick = { showLessonAiDialog = true },
+                        containerColor = Forest.copy(alpha = 0.15f),
+                        contentColor = Forest,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = Forest, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("مراجعة واختبار ذكي بالذكاء الاصطناعي ⚡", fontWeight = FontWeight.Bold, fontSize = 11.sp)
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    HorizontalDivider(color = Ink.copy(alpha = 0.06f))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Easy Button
                     PremiumButton(
@@ -370,7 +389,7 @@ fun TodayScreen(vm: MihadViewModel, user: User, onNavigateToProfile: () -> Unit)
                             selectedLessonForReview = null
                         },
                         containerColor = Forest,
-                        contentColor = Color.White,
+                        contentColor = Color.Black,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text("🔵 متوسط ومناسب (الجدول المعتاد)", fontWeight = FontWeight.Bold, fontSize = 13.sp)
@@ -407,6 +426,14 @@ fun TodayScreen(vm: MihadViewModel, user: User, onNavigateToProfile: () -> Unit)
                     }
                 }
             }
+        }
+
+        if (showLessonAiDialog) {
+            SmartLessonCompanionDialog(
+                lesson = lesson,
+                vm = vm,
+                onDismiss = { showLessonAiDialog = false }
+            )
         }
     }
 }
@@ -485,7 +512,7 @@ fun SmartLogDialog(vm: MihadViewModel, onDismiss: () -> Unit) {
                             enabled = note.isNotBlank(),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Icon(Icons.Default.AutoMode, contentDescription = null, tint = Color.White)
+                            Icon(Icons.Default.AutoMode, contentDescription = null)
                             Spacer(modifier = Modifier.width(8.dp))
                             Text("تحليل واستخراج الأنشطة ✨", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                         }
@@ -580,7 +607,7 @@ fun SmartLogDialog(vm: MihadViewModel, onDismiss: () -> Unit) {
                             enabled = parsedActivities.isNotEmpty(),
                             modifier = Modifier.weight(1.2f)
                         ) {
-                            Text("تأكيد وحفظ الكل ✔", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                            Text("تأكيد وحفظ الكل ✔", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }

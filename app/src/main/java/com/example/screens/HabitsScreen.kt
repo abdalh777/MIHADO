@@ -158,12 +158,12 @@ fun HabitsScreen(vm: MihadViewModel) {
                                         .size(42.dp)
                                         .clip(CircleShape)
                                         .background(if (isCompleted) Forest else Soft)
-                                        .border(2.dp, if (isCompleted) Forest else Forest.copy(alpha = 0.3f), CircleShape)
+                                        .border(1.dp, if (isCompleted) Forest else Forest.copy(alpha = 0.3f), CircleShape)
                                         .clickable { vm.toggleHabit(habit.id) },
                                     contentAlignment = Alignment.Center
                                 ) {
                                     if (isCompleted) {
-                                        Icon(Icons.Default.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+                                        Icon(Icons.Default.Check, contentDescription = null, tint = Color.Black, modifier = Modifier.size(20.dp))
                                     } else {
                                         Text(habit.icon.ifBlank { "🌟" }, fontSize = 18.sp)
                                     }
@@ -176,7 +176,7 @@ fun HabitsScreen(vm: MihadViewModel) {
                                         text = habit.name,
                                         fontSize = 15.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = if (isCompleted) Forest else Ink
+                                        color = if (isCompleted) Ink.copy(alpha = 0.4f) else Ink
                                     )
                                     
                                     Spacer(modifier = Modifier.height(2.dp))
@@ -313,7 +313,7 @@ fun HabitsScreen(vm: MihadViewModel) {
                                     .clickable { isNegativeHabit = false }
                                     .padding(horizontal = 14.dp, vertical = 8.dp)
                             ) {
-                                Text("إيجابية 🌱", color = if (!isNegativeHabit) Color.White else Ink, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Text("إيجابية 🌱", color = if (!isNegativeHabit) Color.Black else Ink.copy(alpha = 0.6f), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                             }
                             Box(
                                 modifier = Modifier
@@ -323,7 +323,7 @@ fun HabitsScreen(vm: MihadViewModel) {
                                     .clickable { isNegativeHabit = true }
                                     .padding(horizontal = 14.dp, vertical = 8.dp)
                             ) {
-                                Text("تجنبية 📵", color = if (isNegativeHabit) Color.White else Ink, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Text("تجنبية 📵", color = if (isNegativeHabit) Color.White else Ink.copy(alpha = 0.6f), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -358,7 +358,7 @@ fun HabitsScreen(vm: MihadViewModel) {
                             enabled = habitName.isNotBlank(),
                             modifier = Modifier.weight(1.2f)
                         ) {
-                            Text("حفظ العادة ✔", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.White)
+                            Text("حفظ العادة ✔", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                         }
                     }
                 }
@@ -484,7 +484,7 @@ fun HabitsScreen(vm: MihadViewModel) {
                             onClick = { selectedHabitForDetails = null },
                             modifier = Modifier.weight(1.2f)
                         ) {
-                            Text("إغلاق", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.White)
+                            Text("إغلاق", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                         }
                     }
                 }

@@ -44,13 +44,14 @@ fun MihadNavigation(vm: MihadViewModel) {
     val navController = rememberNavController()
 
     MaterialTheme(
-        colorScheme = lightColorScheme(
+        colorScheme = darkColorScheme(
             primary = Forest,
             secondary = Mint,
             background = Soft,
-            surface = Color.White,
+            surface = CardBg,
             onBackground = Ink,
-            onPrimary = Color.White
+            onPrimary = Color.White,
+            onSurface = Ink
         )
     ) {
         CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Rtl) {
@@ -79,11 +80,11 @@ fun MihadNavigation(vm: MihadViewModel) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(start = 16.dp, end = 16.dp, bottom = 24.dp)
-                                        .shadow(16.dp, RoundedCornerShape(28.dp), ambientColor = Color.Black.copy(alpha = 0.4f), spotColor = Color.Black.copy(alpha = 0.6f))
-                                        .background(CardBg.copy(alpha = 0.92f), RoundedCornerShape(28.dp))
-                                        .border(1.dp, Forest.copy(alpha = 0.2f), RoundedCornerShape(28.dp))
-                                        .padding(vertical = 6.dp, horizontal = 4.dp)
+                                        .padding(start = 24.dp, end = 24.dp, bottom = 16.dp)
+                                        .shadow(8.dp, RoundedCornerShape(20.dp), ambientColor = Color.Black.copy(alpha = 0.5f), spotColor = Color.Black.copy(alpha = 0.7f))
+                                        .background(CardBg.copy(alpha = 0.95f), RoundedCornerShape(20.dp))
+                                        .border(1.dp, Ink.copy(alpha = 0.12f), RoundedCornerShape(20.dp))
+                                        .padding(vertical = 4.dp, horizontal = 2.dp)
                                 ) {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
@@ -94,11 +95,11 @@ fun MihadNavigation(vm: MihadViewModel) {
                                         tabs.forEach { screen ->
                                             val isSelected = currentRoute == screen.route
                                             
-                                            val scale by animateFloatAsState(if (isSelected) 1.1f else 1.0f, label = "tab_scale")
+                                            val scale by animateFloatAsState(if (isSelected) 1.05f else 1.0f, label = "tab_scale")
                                             
                                             Column(
                                                 modifier = Modifier
-                                                    .clip(RoundedCornerShape(16.dp))
+                                                    .clip(RoundedCornerShape(12.dp))
                                                     .clickable {
                                                         navController.navigate(screen.route) {
                                                             popUpTo(navController.graph.findStartDestination().id) {
@@ -108,7 +109,7 @@ fun MihadNavigation(vm: MihadViewModel) {
                                                             restoreState = true
                                                         }
                                                     }
-                                                    .padding(horizontal = 8.dp, vertical = 6.dp)
+                                                    .padding(horizontal = 6.dp, vertical = 4.dp)
                                                     .graphicsLayer {
                                                         scaleX = scale
                                                         scaleY = scale
@@ -118,10 +119,10 @@ fun MihadNavigation(vm: MihadViewModel) {
                                             ) {
                                                 Box(
                                                     modifier = Modifier
-                                                        .size(42.dp)
+                                                        .size(36.dp)
                                                         .background(
-                                                            if (isSelected) Forest.copy(alpha = 0.15f) else Color.Transparent,
-                                                            RoundedCornerShape(12.dp)
+                                                            if (isSelected) Forest.copy(alpha = 0.12f) else Color.Transparent,
+                                                            RoundedCornerShape(10.dp)
                                                         ),
                                                     contentAlignment = Alignment.Center
                                                 ) {
@@ -129,13 +130,13 @@ fun MihadNavigation(vm: MihadViewModel) {
                                                         imageVector = screen.icon,
                                                         contentDescription = screen.title,
                                                         tint = if (isSelected) Forest else Ink.copy(alpha = 0.4f),
-                                                        modifier = Modifier.size(24.dp)
+                                                        modifier = Modifier.size(20.dp)
                                                     )
                                                 }
-                                                Spacer(modifier = Modifier.height(2.dp))
+                                                Spacer(modifier = Modifier.height(1.dp))
                                                 Text(
                                                     text = screen.title,
-                                                    fontSize = 10.sp,
+                                                    fontSize = 9.sp,
                                                     fontWeight = if (isSelected) FontWeight.Black else FontWeight.Medium,
                                                     color = if (isSelected) Forest else Ink.copy(alpha = 0.4f)
                                                 )

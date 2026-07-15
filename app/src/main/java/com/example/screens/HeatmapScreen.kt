@@ -70,7 +70,7 @@ fun HeatmapScreen(vm: MihadViewModel) {
                 ) {
                     Text(
                         label,
-                        color = if (isSel) Color.White else Forest,
+                        color = if (isSel) Color.Black else Ink.copy(alpha = 0.6f),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -302,7 +302,7 @@ fun HeatmapScreen(vm: MihadViewModel) {
                         onClick = { selectedDateDetails = null },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("موافق", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text("موافق", fontSize = 14.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }

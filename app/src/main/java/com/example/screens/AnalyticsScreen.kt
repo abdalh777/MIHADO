@@ -348,7 +348,7 @@ fun AnalyticsScreen(vm: MihadViewModel, user: User) {
                             },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("تقرير شهري 🌕", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                            Text("تقرير شهري 🌕", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -489,7 +489,7 @@ fun AnalyticsScreen(vm: MihadViewModel, user: User) {
                         enabled = chatMessage.isNotBlank(),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("إرسال السؤال المستشار ✨", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.White)
+                        Text("إرسال السؤال المستشار ✨", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                     }
                 }
 
@@ -569,7 +569,7 @@ fun AnalyticsScreen(vm: MihadViewModel, user: User) {
                         onClick = { selectedInsightContent = null },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("إغلاق", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text("إغلاق", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }

@@ -1,0 +1,6 @@
+{
+  "name": "مِهاد",
+  "description": "تطبيق مخصص للمراجعة المتباعدة للدروس تلقائياً بدون بطاقات تعليمية أو أسئلة لتسهيل عملية التعلم والتركيز على الدراسة فقط.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

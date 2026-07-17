@@ -1166,19 +1166,43 @@ class MihadViewModel(application: Application) : AndroidViewModel(application) {
                 }
 
                 // 3. Daily Planner Sync: Auto-reserve study blocks in Daily Planner leading to test date
-                val todayStr = LocalDate.now().toString()
-                for (lessonTitle in linkedList) {
-                    val activity = PlannerActivity(
-                        id = UUID.randomUUID().toString(),
-                        userId = user.id,
-                        title = "التحضير لاختبار $title: مذاكرة موضوع $lessonTitle 🎯",
-                        startTime = "16:00", // Default study afternoon
-                        durationMinutes = 60,
-                        category = "STUDY",
-                        isCompleted = false,
-                        date = todayStr
-                    )
-                    repository.insertActivity(activity)
+                try {
+                    val today = LocalDate.now()
+                    val testDate = LocalDate.parse(targetDate)
+                    var currentScheduleDate = today
+                    while (currentScheduleDate.isBefore(testDate)) {
+                        val dateStr = currentScheduleDate.toString()
+                        for (lessonTitle in linkedList) {
+                            val activity = PlannerActivity(
+                                id = UUID.randomUUID().toString(),
+                                userId = user.id,
+                                title = "التحضير لاختبار $title: مذاكرة $lessonTitle 🎯",
+                                startTime = "16:00", // Default study afternoon
+                                durationMinutes = 60,
+                                category = "STUDY",
+                                isCompleted = false,
+                                date = dateStr
+                            )
+                            repository.insertActivity(activity)
+                        }
+                        currentScheduleDate = currentScheduleDate.plusDays(1)
+                    }
+                } catch (e: Exception) {
+                    // Fallback to today only if date parsing fails
+                    val todayStr = LocalDate.now().toString()
+                    for (lessonTitle in linkedList) {
+                        val activity = PlannerActivity(
+                            id = UUID.randomUUID().toString(),
+                            userId = user.id,
+                            title = "التحضير لاختبار $title: مذاكرة موضوع $lessonTitle 🎯",
+                            startTime = "16:00", // Default study afternoon
+                            durationMinutes = 60,
+                            category = "STUDY",
+                            isCompleted = false,
+                            date = todayStr
+                        )
+                        repository.insertActivity(activity)
+                    }
                 }
 
                 onComplete(true, title)
